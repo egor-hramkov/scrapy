@@ -1,26 +1,19 @@
-from pathlib import Path
+from typing import Any
 
-import scrapy
+from scrapy import Selector, Request
 from scrapy.crawler import CrawlerProcess
-from scrapy.spiders import Rule
-from scrapy.linkextractors import LinkExtractor
+from scrapy.http import Response, HtmlResponse
+from scrapy.spiders import Spider
 from steam.items.product_item import ProductItem
 from steam.items.product_item_loader import ProductItemLoader
 
 
-class ProductsSpider(scrapy.spiders.CrawlSpider):
+class ProductsSpider(Spider):
+    base_url = 'https://store.steampowered.com/search/results/?query&start={}&count={}&sort_by=Released_DESC&infinite=1'
     name = 'products'
-    start_urls = ["https://store.steampowered.com/search/?sort_by=Released_DESC"]
+    start_urls = [base_url.format(50, 50)]
     allowed_domains = ["steampowered.com"]
-    rules = [
-        Rule(
-            LinkExtractor(
-                allow='/app/(.+)/',
-                restrict_css='#search_result_container'
-            ),
-            callback='parse_product'
-        )
-    ]
+    rules = []
     custom_settings = {
         'FEED_FORMAT': 'csv',
         'FEED_URI': 'products.csv',
@@ -32,6 +25,15 @@ class ProductsSpider(scrapy.spiders.CrawlSpider):
     APP_NAME_CSS = '.apphub_AppName ::text'
     SPECS_CSS = '#category_block > div > a > div.label ::text'
     N_REVIEWS_CSS = '#review_histogram_rollup_section > div.user_reviews_summary_bar > div > span:nth-child(3) ::text'
+
+    def parse(self, response: Response, **kwargs: Any):
+        data = response.json().get('results_html', '')
+        games = Selector(text=data).css('a').getall()
+        for game in games:
+            game_url = Selector(text=game).css('a ::attr(href)').extract_first()
+            request = Request(url=game_url, callback=self.parse_product)
+            yield request
+
 
     def parse_product(self, response) -> ProductItem:
         """Основной метод парсинга игр"""
