@@ -1,19 +1,25 @@
-from itemloaders.processors import MapCompose, Compose
+from itemloaders.processors import Compose
 
 import scrapy
-from steam.utils import str_to_int, StripText, list_to_str
+from steam.utils import list_to_str
+
+import re
+
+
+def cast_reviews_to_int(x: list) -> int:
+    """Вытягивает число из сырых данных об отзыве"""
+    return int(re.search(r'\d+', x[0]).group())
 
 
 class ProductItem(scrapy.Item):
     app_name = scrapy.Field()
     specs = scrapy.Field(output_processor=Compose(list_to_str))
     n_reviews = scrapy.Field(
-        output_processor=Compose(
-            MapCompose(
-                lambda x: x.replace('(', ''),
-                lambda x: x.replace(')', ''),
-                lambda x: x.split()[0],
-                str_to_int),
-            max
-        )
+        output_processor=Compose(cast_reviews_to_int)
+    )
+    positive_reviews = scrapy.Field(
+        output_processor=Compose(cast_reviews_to_int)
+    )
+    negative_reviews = scrapy.Field(
+        output_processor=Compose(cast_reviews_to_int)
     )

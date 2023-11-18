@@ -24,7 +24,9 @@ class ProductsSpider(Spider):
 
     APP_NAME_CSS = '.apphub_AppName ::text'
     SPECS_CSS = '#category_block > div > a > div.label ::text'
-    N_REVIEWS_CSS = '#review_histogram_rollup_section > div.user_reviews_summary_bar > div > span:nth-child(3) ::text'
+    N_REVIEWS_CSS = '#reviews_filter_options > div:nth-child(1) > div.user_reviews_filter_menu_flyout > div > label:nth-child(2) > span ::text'
+    POSITIVE_REVIEWS_CSS = '#reviews_filter_options > div:nth-child(1) > div.user_reviews_filter_menu_flyout > div > label:nth-child(5) > span ::text'
+    NEGATIVE_REVIEWS_CSS = '#reviews_filter_options > div:nth-child(1) > div.user_reviews_filter_menu_flyout > div > label:nth-child(8) > span ::text'
 
     def parse(self, response: Response, **kwargs: Any):
         data = response.json().get('results_html', '')
@@ -34,7 +36,6 @@ class ProductsSpider(Spider):
             request = Request(url=game_url, callback=self.parse_product)
             yield request
 
-
     def parse_product(self, response) -> ProductItem:
         """Основной метод парсинга игр"""
 
@@ -42,8 +43,16 @@ class ProductsSpider(Spider):
         loader.add_css('app_name', self.APP_NAME_CSS)
         loader.add_css('specs', self.SPECS_CSS)
         loader.add_css('n_reviews', self.N_REVIEWS_CSS)
+        loader.add_css('positive_reviews', self.POSITIVE_REVIEWS_CSS)
+        loader.add_css('negative_reviews', self.NEGATIVE_REVIEWS_CSS)
         data: ProductItem = loader.load_item()
+        self._post_proccesing(data)
+        return data
+
+    def _post_proccesing(self, data: ProductItem) -> ProductItem:
         data['n_reviews'] = data.get('n_reviews', 0)
+        data['positive_reviews'] = data.get('positive_reviews', 0)
+        data['negative_reviews'] = data.get('negative_reviews', 0)
         return data
 
 
