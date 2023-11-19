@@ -19,7 +19,7 @@ class ProductsSpider(Spider):
     skip_n_games = 0
     custom_settings = {
         'FEED_FORMAT': 'csv',
-        'FEED_URI': 'products.csv',
+        'FEED_URI': '../products.csv',
         'FEEDS': {
             'products.csv': {'format': 'csv', 'overwrite': True}
         }
@@ -41,7 +41,7 @@ class ProductsSpider(Spider):
             request = Request(url=game_url, callback=self.parse_product)
             yield request
         self.start += 50
-        if self.start >= 1000:
+        if self.start >= 100:
             return
         main_request = Request(
             url=self.base_url.format(self.start, self.count),
