@@ -53,6 +53,8 @@ class ProductsSpider(Spider):
         data['n_reviews'] = data.get('n_reviews', 0)
         data['positive_reviews'] = data.get('positive_reviews', 0)
         data['negative_reviews'] = data.get('negative_reviews', 0)
+        data['positive_percent'] = data['positive_reviews'] / data['n_reviews'] * 100 if data['n_reviews'] != 0 else 0
+        data['negative_percent'] = data['negative_reviews'] / data['n_reviews'] * 100 if data['n_reviews'] != 0 else 0
         return data
 
 

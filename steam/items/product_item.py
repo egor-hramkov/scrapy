@@ -23,3 +23,5 @@ class ProductItem(scrapy.Item):
     negative_reviews = scrapy.Field(
         output_processor=Compose(cast_reviews_to_int)
     )
+    positive_percent = scrapy.Field()
+    negative_percent = scrapy.Field()
