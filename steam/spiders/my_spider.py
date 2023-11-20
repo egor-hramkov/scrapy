@@ -86,5 +86,5 @@ if __name__ == '__main__':
     process.start()
 
     end_time = time.time()
-    elapsed_time = end_time - start_time
+    elapsed_time = int(end_time - start_time)
     print("Время парсинга: ", parse_time(elapsed_time))
