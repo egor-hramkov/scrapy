@@ -6,8 +6,9 @@ from steam.utils import list_to_str
 import re
 
 
-def cast_reviews_to_int(x: list) -> int:
+def cast_reviews_to_int(x: list[str]) -> int:
     """Вытягивает число из сырых данных об отзыве"""
+    x[0] = x[0].replace(',', '')
     return int(re.search(r'\d+', x[0]).group())
 
 
