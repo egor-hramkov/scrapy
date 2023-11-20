@@ -42,9 +42,9 @@ class ProductsSpider(Spider):
             game_url = Selector(text=game).css('a ::attr(href)').extract_first()
             request = Request(url=game_url, callback=self.parse_product)
             yield request
-        self.start += 50
-        if self.start >= 100:
+        if len(games) != 50:
             return
+        self.start += 50
         main_request = Request(
             url=self.base_url.format(self.start, self.count),
             callback=self.parse
