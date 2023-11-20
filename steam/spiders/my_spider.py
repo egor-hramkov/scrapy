@@ -1,4 +1,5 @@
 from typing import Any
+import time
 
 from scrapy import Selector, Request
 from scrapy.crawler import CrawlerProcess
@@ -7,6 +8,7 @@ from scrapy.spiders import Spider
 from steam.items.product_item import ProductItem
 from steam.items.product_item_loader import ProductItemLoader
 from steam.enums import SelectorsEnum
+from steam.utils import parse_time
 
 
 class ProductsSpider(Spider):
@@ -75,9 +77,14 @@ class ProductsSpider(Spider):
 if __name__ == '__main__':
     print("Введите количество игр которое хотите пропустить: ")
     skip_n_games = int(input())
+
+    start_time = time.time()
     process = CrawlerProcess({
         'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
     })
-
     process.crawl(ProductsSpider, skip_n_games)
     process.start()
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print("Время парсинга: ", parse_time(elapsed_time))
