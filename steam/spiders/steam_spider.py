@@ -23,14 +23,14 @@ class ProductsSpider(Spider):
         'FEED_FORMAT': 'csv',
         'FEED_URI': '../products.csv',
         'FEEDS': {
-            'products.csv': {'format': 'csv', 'overwrite': True}
+            '../products.csv': {'format': 'csv', 'overwrite': True}
         }
     }
 
     def __init__(self, skip_n_games: int = 0, **kwargs):
         self.skip_n_games = skip_n_games
         if skip_n_games != 0:
-            self.custom_settings['FEEDS']['products.csv']['overwrite'] = False
+            self.custom_settings['FEEDS']['../products.csv']['overwrite'] = False
             self.start = skip_n_games
             self.start_urls = [self.base_url.format(self.start, self.count)]
         super().__init__(**kwargs)
