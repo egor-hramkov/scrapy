@@ -1,3 +1,6 @@
+import datetime
+
+
 def str_to_int(x):
     try:
         return int(float(x))
@@ -19,6 +22,7 @@ class StripText:
             return value.strip(self.chars)
         except:
             return value
+
 
 def parse_time(elapsed_time: int) -> str:
     """Преобразует время в секундах в другой формат"""
